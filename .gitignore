@@ -1,0 +1,26 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local database/index
+data/
+*.db
+
+# OCR debug images
+debug_page_*.png
+debug_processed_*.png
+
+# Environment/local files
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

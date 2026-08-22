@@ -1,0 +1,6 @@
+PySide6
+PyMuPDF
+python-docx
+openpyxl
+Pillow
+watchdog
