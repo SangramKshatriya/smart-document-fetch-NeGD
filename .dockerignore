@@ -1,0 +1,13 @@
+.git
+.gitignore
+.venv
+venv
+__pycache__
+.pytest_cache
+*.py[cod]
+*.db
+*.db-shm
+*.db-wal
+.env
+*.wav
+data/digilocker
