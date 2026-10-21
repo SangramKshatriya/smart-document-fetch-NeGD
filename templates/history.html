@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Activity · Smart Document Finder{% endblock %}
+{% block content %}
+<section class="welcome-row"><div><div class="eyebrow">WORKSPACE RECORDS</div><h1>Activity history</h1><p>Searches and document access recorded for {{ session.get('display_name', 'this session') }}.</p></div><a class="button button-secondary" href="{{ url_for('index') }}">← Back to search</a></section>
+<section class="metrics-grid history-metrics">
+  <div class="metric-card"><span class="metric-label">Searches recorded</span><strong class="metric-number">{{ stats.get('searches', searches|length) if stats else searches|length }}</strong><span class="metric-foot">Search history</span></div>
+  <div class="metric-card"><span class="metric-label">Documents opened</span><strong class="metric-number">{{ stats.get('document_opens', accesses|length) if stats else accesses|length }}</strong><span class="metric-foot">Document access events</span></div>
+  <div class="metric-card"><span class="metric-label">Current identity</span><strong class="metric-text">{{ session.get('username', 'web-user') }}</strong><span class="metric-foot">Activity username</span></div>
+</section>
+<section class="panel history-panel"><div class="section-heading"><div><div class="panel-kicker">SEARCH LOG</div><h2>Recent searches</h2></div></div>
+  {% if searches %}<div class="table-wrap"><table><thead><tr><th>Query</th><th>Language</th><th>Results</th><th>Status</th><th>When</th></tr></thead><tbody>{% for item in searches %}<tr><td>{{ item.original_query or '—' }}</td><td>{{ item.detected_language or '—' }}</td><td>{{ item.results_count or 0 }}</td><td><span class="status status-{{ (item.status or 'pending')|lower }}">{{ item.status or 'PENDING' }}</span></td><td>{{ item.searched_at or item.event_time or '—' }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-inline">No searches recorded yet.</div>{% endif %}
+</section>
+<section class="panel history-panel"><div class="section-heading"><div><div class="panel-kicker">DOCUMENT ACCESS</div><h2>Recently opened files</h2></div></div>
+  {% if accesses %}<div class="table-wrap"><table><thead><tr><th>Document</th><th>Action</th><th>Status</th><th>When</th></tr></thead><tbody>{% for item in accesses %}<tr><td>{{ item.document_name or '—' }}</td><td>{{ item.action or 'open' }}</td><td><span class="status status-{{ (item.status or 'pending')|lower }}">{{ item.status or 'PENDING' }}</span></td><td>{{ item.event_time or item.accessed_at or '—' }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-inline">No document access recorded yet.</div>{% endif %}
+</section>
+{% endblock %}

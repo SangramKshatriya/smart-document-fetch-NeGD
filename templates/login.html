@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Access · Smart Document Finder{% endblock %}
+{% block content %}
+<section class="login-layout">
+  <div class="login-copy">
+    <div class="eyebrow">YOUR DOCUMENTS, EASIER TO FIND</div>
+    <h1>One search for your important documents.</h1>
+    <p>Search indexed PDFs, images, Word files, spreadsheets and text documents. Queries can be written in English or supported Indian languages.</p>
+    <div class="feature-list">
+      <div><span class="feature-icon">⌕</span><span><strong>Smart search</strong><small>Match document names and extracted text.</small></span></div>
+      <div><span class="feature-icon">文</span><span><strong>Multilingual</strong><small>Local language detection with optional translation APIs.</small></span></div>
+      <div><span class="feature-icon">▤</span><span><strong>OCR indexing</strong><small>Extract searchable text from scanned documents and images.</small></span></div>
+    </div>
+  </div>
+  <div class="panel login-panel">
+    <div class="panel-kicker">PRIVATE WORKSPACE</div>
+    <h2>Sign in to continue</h2>
+    {% if setup_required %}
+      <div class="flash flash-error">Access is not configured yet. In Render, open your service’s Environment settings and add <code>WEB_APP_PASSWORD</code> plus a long random <code>WEB_APP_SECRET_KEY</code>, then redeploy.</div>
+    {% else %}
+      <p class="muted">Use the workspace password configured by the administrator.</p>
+      <form method="post" action="{{ url_for('login') }}" class="form-stack">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <label for="display_name">Your name <span class="optional">(for activity history)</span></label>
+        <input id="display_name" name="display_name" maxlength="120" autocomplete="name" placeholder="e.g. Anshul Chaudhary">
+        <label for="username">Username <span class="optional">(optional)</span></label>
+        <input id="username" name="username" maxlength="40" autocomplete="username" placeholder="e.g. anshul">
+        <label for="password">Workspace password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password" placeholder="Enter access password">
+        <button class="button button-primary button-full" type="submit">Open workspace <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="privacy-note">This password protects a shared workspace. It is not individual account authentication; everyone who has it can access the same indexed document library.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

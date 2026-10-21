@@ -76,3 +76,22 @@ python -m pip install -r requirements-dev.txt
 python -c "from dotenv import load_dotenv; print('dotenv OK')"
 python scripts/check_setup.py
 pytest -q
+
+
+
+
+--------------------------------
+
+git init
+git branch -M main
+git status --short
+git add .
+git status
+git commit -m "Initial commit: SmartDocumentFinder web application"
+
+git config --global user.name "Your Name"
+git config --global user.email "your-github-email@example.com"
+
+git remote add origin https://github.com/SangramKshatriya/smart-document-fetch-NeGD_2
+git remote -v
+git push -u origin main

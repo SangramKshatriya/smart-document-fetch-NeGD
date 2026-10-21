@@ -165,22 +165,56 @@ The test suite is offline-safe: external language APIs, DigiLocker calls, OCR, a
 
 The PostgreSQL integration test is enabled when `TEST_POSTGRES_URL` is set; otherwise it is skipped so the normal unit suite does not require a running server.
 
+
+## Browser deployment (Render)
+
+The desktop application remains available through `python app.py`. A separate Flask web entry point (`web_app.py`) serves the browser UI and is the Render Docker start target. It reuses the existing indexer, OCR extraction, multilingual query preparation, document search and activity-history routines.
+
+### Run the web app locally
+
+```bash
+pip install -r requirements.txt
+# Set a strong password before starting the app.
+# Windows PowerShell: $env:WEB_APP_PASSWORD = "choose-a-long-password"
+# macOS/Linux: export WEB_APP_PASSWORD="choose-a-long-password"
+python web_app.py
+```
+
+Open `http://localhost:5000`. The browser version supports text search, file upload and indexing, scanning the configured folder, opening/downloading documents, and activity history. The desktop microphone/voice UI remains in the desktop application; it is not exposed in the browser interface. Optional Sarvam/BHASHINI translation services are used when configured with their API credentials.
+
+### Render setup
+
+1. Push this project to GitHub and create a **Web Service** in Render using the repository's Dockerfile.
+2. The Dockerfile runs Gunicorn with `web_app:app` and binds to Render's `$PORT`; pytest runs during the image build, not as the running service.
+3. In Render → **Environment**, set `WEB_APP_PASSWORD` to a strong secret and `WEB_APP_SECRET_KEY` to a separate long random value. The app intentionally stays locked if `WEB_APP_PASSWORD` is missing.
+4. Add `DOCUMENT_FOLDER=/documents`. Add `LANGUAGE_PROVIDER=local` for local-only query handling, or set `LANGUAGE_PROVIDER=sarvam` plus `SARVAM_API_KEY`, or configure BHASHINI variables. Do not commit secrets to GitHub.
+5. After deployment, sign in with the workspace password, upload supported files or select **Scan and index folder**. The upload size limit is 25 MB per file.
+
+**Important privacy and storage notes:** This starter web version uses one shared workspace password; anyone who knows it can search/download the same server-side document library. Do not use it for confidential or multi-user personal records on a public URL without adding individual accounts and per-user document isolation. Render's container filesystem is ephemeral by default, so uploaded documents and the SQLite document index may be lost when the service is replaced/redeployed. For durable storage, attach a supported persistent disk and set `DOCUMENT_FOLDER` and `SMARTDOCUMENT_DATA_DIR` to paths on that disk, or use an object-storage service and a durable document index.
+
+
 ## Docker
 
-Build and run the container:
+Build and run the browser version locally:
 
 ```bash
 docker build -t smart-document-finder .
-docker run --rm -it -v "<documents-folder>:/documents" -v "<data-folder>:/app/data" smart-document-finder
+docker run --rm -p 10000:10000 \
+  -e WEB_APP_PASSWORD="choose-a-long-password" \
+  -e WEB_APP_SECRET_KEY="replace-with-a-long-random-secret" \
+  -e DOCUMENT_FOLDER=/documents \
+  -e SMARTDOCUMENT_DATA_DIR=/app/data \
+  -v "<documents-folder>:/documents" -v "<data-folder>:/app/data" \
+  smart-document-finder
 ```
 
-For a CI-style container test run:
+Open `http://localhost:10000`. For a CI-style container test run, override the default web-server command:
 
 ```bash
-docker run --rm smart-document-finder pytest -q
+docker run --rm --entrypoint pytest smart-document-finder -q
 ```
 
-The application is a desktop Qt application, so a real GUI session needs a display server (for example an X11 socket on Linux).
+The desktop interface remains available through `python app.py` on a computer with a graphical display. The Render Docker service uses `web_app.py` and does not launch the PySide6 windows.
 
 ## UI behavior
 

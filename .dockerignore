@@ -11,3 +11,8 @@ __pycache__
 .env
 *.wav
 data/digilocker
+
+# Runtime data and user uploads should not be baked into the image
+data/
+uploads/
+.env

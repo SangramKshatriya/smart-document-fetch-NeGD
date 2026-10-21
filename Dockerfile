@@ -81,6 +81,6 @@ VOLUME ["/documents", "/app/data"]
 # ---------------------------------------------------------
 # Default container action
 # ---------------------------------------------------------
-# The default action is the automated test suite.
-# The GUI can be started explicitly with `docker run ... python app.py`.
-CMD ["pytest", "-q"]
+# Render starts the browser-facing Flask app. The desktop app remains available via `python app.py`.
+EXPOSE 10000
+CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT:-10000} --workers 1 --threads 4 --timeout 120 web_app:app"]
